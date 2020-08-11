@@ -32,3 +32,15 @@
 		* spring reactive web brings in Spring WebFlux and not MVC, webflux is a new reactive web runtime that allows us to build reactive web services in spring ecosystem.
 		
 #### Basics of Reactive -  
+  * The 4 main types reactive types are - 
+    - Publisher - it broadcasts data to subscribers 
+    - Processor - its a bridge.(a publisher and a subscriber)
+    - Subscriber - it consumes the data. (in onNext method). When subscriber first subscribes to a publisher a new subscription is created. 
+    - Subscription - this is the thing that we use to request more data from the publisher. i.e. it drives the rate of consumption. so publisher cannot overwhelm 
+    subscriber with data since we are managing how much data we want. (this flow control of taking as many as we can and cancelling if we cannot consume more is called backpressure)
+    
+  * we don't directly implement these interfaces and in order to do seemless use of rate limiting or other things on streams of data, for this we can use tools like project reactor,
+  it builds on top of reactive stream specification and provides 2 other types .
+    * **Flux** - it is a thing that produces zero or more values. (its ultimately Publisher but supports high level operations such 
+    as map or flatmap or filter etc.)
+    * **Mono** - a thing that produces at most one value. It is like a CompletableFuture.
