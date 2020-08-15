@@ -1,5 +1,7 @@
 package com.github.mcoder.exploringreactivespring;
 
+import com.github.mcoder.exploringreactivespring.repositories.ReservationRepository;
+import com.github.mcoder.exploringreactivespring.service.ReservationService;
 import io.r2dbc.spi.ConnectionFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager;
 import org.springframework.data.r2dbc.connectionfactory.init.CompositeDatabasePopulator;
 import org.springframework.data.r2dbc.connectionfactory.init.ConnectionFactoryInitializer;
 import org.springframework.data.r2dbc.core.DatabaseClient;
@@ -20,6 +23,8 @@ import org.springframework.data.r2dbc.core.DatabaseClientExtensionsKt;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.util.context.Context;
 
@@ -33,6 +38,12 @@ public class ExploringReactiveSpringApplication {
 		SpringApplication.run(ExploringReactiveSpringApplication.class, args);
 	}
 
+
+	@Bean
+	ReactiveTransactionManager reactiveTransactionManager(ConnectionFactory cf) {
+		return new R2dbcTransactionManager(cf);
+	}
+
 }
 
 @Component
@@ -41,9 +52,10 @@ public class ExploringReactiveSpringApplication {
 class SampleDataInitializer {
 
 	private final ReservationRepository reservationRepository;
+	private final ReservationService reservationService;
 
 //	databaseclient is like jdbctemplate for reactive
-	private final DatabaseClient databaseClient;
+//	private final DatabaseClient databaseClient;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void ready() {
@@ -66,17 +78,6 @@ class SampleDataInitializer {
 */
 
 
-		Flux<Reservation> reservations = Flux
-				.just("lalu", "rabri", "nitish", "tejaswi", "lalten")
-				.map(name -> new Reservation(null, name))
-				.subscriberContext(Context.of("name", "lalu", "partner","rabri" ))
-				.flatMap(reservation -> this.reservationRepository.save(reservation))
-				.doOnEach(signal -> {
-					log.info("checking context somewhere in the pipeline : {}", signal.getContext().size());
-					signal.getContext().stream().forEach(entry -> {
-						log.info("inside context details, with key : {} , value: {}", entry.getKey(), entry.getValue());
-					});
-				});
 
 
 
@@ -86,7 +87,7 @@ class SampleDataInitializer {
 
 		this.reservationRepository
 				.deleteAll()
-				.thenMany(reservations)
+				.thenMany(reservationService.saveAll("lalu", "rabri", "nitish", "tejaswi", "lalten"))
 				.thenMany(this.reservationRepository.findAll())
 				.subscribe(log::info);
 
@@ -100,19 +101,4 @@ class SampleDataInitializer {
 
 
 
-interface ReservationRepository extends ReactiveCrudRepository<Reservation, String> {
-//	@Tailable for tailable query feature we can just use this annotation if db is started in that mode.
-	Flux<Reservation> findByName(String name);
-}
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class Reservation {
-
-	@Id
-	private Integer id;
-	private String name;
-
-}
 
