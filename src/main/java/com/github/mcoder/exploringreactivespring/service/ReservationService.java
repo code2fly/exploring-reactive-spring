@@ -33,6 +33,12 @@ public class ReservationService {
         return this.transactionalOperator.transactional(reservations);
     }
 
+
+
+    public Flux<Reservation> findReservationByName(String name) {
+        return this.reservationRepository.findByName(name);
+    }
+
     private void assertDateIsValid(Reservation reservation) {
         log.info("current reservation is : {}", reservation);
         Assert.isTrue(!reservation.getName().equalsIgnoreCase("pappu"), "is not a valid name");

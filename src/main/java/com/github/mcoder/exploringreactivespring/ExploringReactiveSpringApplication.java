@@ -31,7 +31,6 @@ import reactor.util.context.Context;
 
 import java.util.function.Consumer;
 
-// TODO replace mongo docker-compose file to prostgres , containerize both app and postgres to connect with each other
 @SpringBootApplication
 //@EnableTransactionManagement  -- this can be used if we want  to use @Transactional
 public class ExploringReactiveSpringApplication {
