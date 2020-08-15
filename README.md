@@ -83,3 +83,28 @@
     * http is good but it does not do well when it comes to bi-directional communication, so websockets are a slightly better option.
     * can be an alternative to server-sent event stream.
     * for someone to start using websocket they have to connect to an http endpoint that then gets upgraded to WebSocket protocol.
+    
+    
+  * **Http Client** - 
+    * `WebCleint` is used to perform http client request like RestTemplate.
+    * webclient also provides many options like `onErrorResume` etc.. for ***graceful degradation*** for scenarios where the api we are trying to call 
+    is down , or slow or failing.
+      * graceful degradation - ability of system to maintain limited functionality even when large part of it has been destroyed to avoid catastropic failure, 
+      i.e. to avoid minimal effect to reach client and try to mitigate it someway either getting data from cache , returning default value, loadbalancing request to other servers.
+    * but sometimes these operators to make our code robust in case server side topology changes are not helpful like in cases we know the service 
+    is not going to come up for sometime they is no point in retrying etc.. this is where ***circuit breaker*** comes in.
+    * it is the mechanism by which prevents our service from overwhelming other downstream services or being overwhelmed themselves by doing 
+    needless work of calling or retrying even if say service is down or not even present in discovery.
+    * circuit breaker maintains a state i.e. say a api fails the flag against it is set and next time call to it will be avoided but suppose we 
+    are using service registry based client side loadbalancing spring autoconfigures things for us.. say service is not avaialable for the first time
+     for us say if there is a change in service discovery and we get a heartbeat telling that the table has new entry for the service we were looking for(i.e. that 
+    service is up again) then the flag set in circuit breaker will automatically be set to false even if last interaction was a failure to make smart decision.
+      * we can also set this flag of circuit breaker manually by configuring  `ReactiveCircuitBreakerFactory` (but it requires downcasting to 
+      undelying reselience4j or hystrix types) // TODO check this how to do it.
+    * ***Service Hedging*** - for ***idempotent services*** we can use the concept of hedging, i.e. getting multiple instances of the target service
+    from discovery and then calling each of them in parallel and the first one to respond will be accepted and then backpressure will be applied on the other two.
+      * this can useful in case we have a SLA on our service and the service below us needs to run half of our sla to make sure we have scope of retry etc so instead
+      of us timing out the response we can say call all of them and pick the response from the one that replied the fastest.
+      * this concept can be easily achieved in reactive with `Flux.first(flux1, flux2...)`
+      
+           
