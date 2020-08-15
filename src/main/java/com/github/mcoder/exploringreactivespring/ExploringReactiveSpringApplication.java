@@ -1,5 +1,6 @@
 package com.github.mcoder.exploringreactivespring;
 
+import com.github.mcoder.exploringreactivespring.model.Reservation;
 import com.github.mcoder.exploringreactivespring.repositories.ReservationRepository;
 import com.github.mcoder.exploringreactivespring.service.ReservationService;
 import io.r2dbc.spi.ConnectionFactory;
@@ -26,13 +27,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.reactive.TransactionalOperator;
+import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.util.context.Context;
 
 import java.util.function.Consumer;
 
+import static org.springframework.web.reactive.function.server.RouterFunctions.*;
+
 @SpringBootApplication
-//@EnableTransactionManagement  -- this can be used if we want  to use @Transactional
+@EnableTransactionManagement
 public class ExploringReactiveSpringApplication {
 
 	public static void main(String[] args) {
@@ -41,8 +46,12 @@ public class ExploringReactiveSpringApplication {
 
 
 	@Bean
-	ReactiveTransactionManager reactiveTransactionManager(ConnectionFactory cf) {
-		return new R2dbcTransactionManager(cf);
+	RouterFunction<ServerResponse> routes(ReservationService reservationService) {
+		return route()
+				.GET("/api/reservations",
+						req -> ServerResponse.ok().body(reservationService.findAllReservations(), Reservation.class))
+				.GET("/api/reservationbyid/{id}", req -> ServerResponse.ok().body(reservationService.findReservationById(req.pathVariable("id")), Reservation.class))
+				.build();
 	}
 
 }
@@ -60,31 +69,6 @@ class SampleDataInitializer {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void ready() {
-
-/*
-
-		this.databaseClient
-				.execute("CREATE TABLE RESERVATION (id SERIAL PRIMARY KEY, name TEXT NOT NULL)")
-				.then()
-				.thenMany(Flux.just("lalu", "rabri", "nitish", "tejaswi", "lalten"))
-				.map(name -> new Reservation(null, name))
-				.subscriberContext(Context.of("name", "lalu", "partner","rabri" ))
-				.flatMap(reservation -> this.reservationRepository.save(reservation))
-				.doOnEach(signal -> {
-					log.info("checking context somewhere in the pipeline : {}", signal.getContext().size());
-					signal.getContext().stream().forEach(entry -> {
-						log.info("inside context details, with key : {} , value: {}", entry.getKey(), entry.getValue());
-					});
-				});
-*/
-
-
-
-
-
-
-		// nothing would happen by running just the above code, since we have not subscribed to above publisher (right now it is cold stream , once we subscribe they become hot stream)
-//		reservations.subscribe();
 
 		this.reservationRepository
 				.deleteAll()

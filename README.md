@@ -59,3 +59,5 @@
     * spring uses this Context heavily in security while propagating the Authentication principal, in distributed tracing,
     transaction propagation (we can also use it for MDC)
     
+  * **Http service** -
+    * in spring reactive REST api can be designed in 2 ways - MVC style and Functional reactive style 
