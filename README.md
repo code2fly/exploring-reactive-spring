@@ -21,7 +21,7 @@
 	async unbounded streams of data.(reactive-streams.org)
 		* reactive stream spec provides us foundational types that we can depend upon like common currency that can use to describe asynchronous streams of data
 		potentially unbounded latent streams of data.
-			* benefit of reactive stream types is that they give us a way to say "hey i have got a thing thats gonna produce some data and i want to subscribe to
+			* benefit of reactive stream types is that they give us a way to say "hey i have got a thing that's gonna produce some data and i want to subscribe to
 			that data when it is avaialable (async by default)"
 			* since we have registered the intent to recieve the data when it is avaialable we dont have to wait for that data and someone else can use that thread.
 			* but that is all we get from reactive streams there is no plumbing involved on how we can process streams of data ,that is all up to us ( we generally
@@ -44,3 +44,18 @@
     * **Flux** - it is a thing that produces zero or more values. (its ultimately Publisher but supports high level operations such 
     as map or flatmap or filter etc.)
     * **Mono** - a thing that produces at most one value. It is like a CompletableFuture.
+    
+  * mongodb has a concept of `tailable query` if db is started in replicated mode. This is particularly useful when working with reactive application.
+    *  since mongo can be distributed db they prefer UUID for id field over monotonically incrementing numbers.
+    
+    
+  * **Transactions in reactive world** - 
+    * since we are no more staying on the same thread during a transaction we cannot rely on the traditional approach of 
+    ThreadLocal(map of key value stored on a current thread) that spring and everything until now used.
+    
+    * so we need some other way to propagate that state associated with  current ongoing transaction (and we cannot rely on threadlocal now with reactive)
+    so reactive team created `Context`. its like a dictionary that gets propagated for the entirety of the pipeline.
+    *  anywhere in the pipeline we can get access to the context say using `doOnEach(signal -> signal.getContext()`
+    * spring uses this Context heavily in security while propagating the Authentication principal, in distributed tracing,
+    transaction propagation (we can also use it for MDC)
+    

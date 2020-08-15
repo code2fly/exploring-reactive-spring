@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.repository.Tailable;
+import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.data.r2dbc.core.DatabaseClientExtensionsKt;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -34,8 +34,20 @@ class SampleDataInitializer {
 
 	private final ReservationRepository reservationRepository;
 
+//	databaseclient is like jdbctemplate for reactive
+	private final DatabaseClient databaseClient;
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void ready() {
+
+		this.databaseClient
+				.select()
+				.from("reservation").as(Reservation.class)
+				.fetch()
+				.all()
+				.subscribe(log::info);
+
+
 		Flux<String> names = Flux.just("lalu", "rabri", "nitish", "tejaswi", "lalten");
 		Flux<Reservation> reservations = names.map(name -> new Reservation(null, name))
 				.flatMap(reservation -> this.reservationRepository.save(reservation));
@@ -64,7 +76,6 @@ interface ReservationRepository extends ReactiveCrudRepository<Reservation, Stri
 	Flux<Reservation> findByName(String name);
 }
 
-@Document
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
