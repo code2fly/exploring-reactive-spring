@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class ReservationService {
 
+//     similar to TransactionTemplate
     private final TransactionalOperator transactionalOperator;
     private final ReservationRepository reservationRepository;
 

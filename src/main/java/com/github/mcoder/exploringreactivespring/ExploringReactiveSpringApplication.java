@@ -24,6 +24,7 @@ import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.util.context.Context;
@@ -32,6 +33,7 @@ import java.util.function.Consumer;
 
 // TODO replace mongo docker-compose file to prostgres , containerize both app and postgres to connect with each other
 @SpringBootApplication
+//@EnableTransactionManagement  -- this can be used if we want  to use @Transactional
 public class ExploringReactiveSpringApplication {
 
 	public static void main(String[] args) {
