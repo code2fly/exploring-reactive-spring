@@ -23,6 +23,7 @@ import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.r2dbc.core.DatabaseClientExtensionsKt;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -51,6 +52,7 @@ public class ExploringReactiveSpringApplication {
 				.GET("/api/reservations",
 						req -> ServerResponse.ok().body(reservationService.findAllReservations(), Reservation.class))
 				.GET("/api/reservationbyid/{id}", req -> ServerResponse.ok().body(reservationService.findReservationById(req.pathVariable("id")), Reservation.class))
+				.GET("/api/reservations/random", request -> ServerResponse.ok().contentType(MediaType.APPLICATION_STREAM_JSON).body(reservationService.getManyReservations(), Reservation.class))
 				.build();
 	}
 

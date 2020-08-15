@@ -61,3 +61,16 @@
     
   * **Http service** -
     * in spring reactive REST api can be designed in 2 ways - MVC style and Functional reactive style 
+    * apart from creating normal REST api that we were also building with spring MVC , ***what reactive spring helps us in cases we 
+    are at a risk of monopolizing a thread*** . e.g. whereever we want to keep a socket open(using traditional java i/o)
+      * instead of returning one since value from a REST api, suppose we want to get access to latest data as quickly as possible.
+      * this is a common scenario and a common implementation for such a case is say we might have something that uses a server socket that just keeps that socket open
+      and we keep reading from that socket all the time (that way we dont have to connect again, or latency of setting up network call with acking, connecting, teardown etc.).
+      * i.e. in above approach the socket remains open and a thread is assigned to that socket so that we can process new updates as soon as they arrive instead of repolling or reinvoking REST api.
+      *  use cases for such kind of requirement or style - chat messaging, stock ticker(high speed low latency trading), status/presence notification
+      * to do this in Http we can build a ServerSendEvent endpoint, this endpoint will give us a infinite stream of values.
+        * `Server-Sent event` is a protocol that is based on Http, but when the client knows about the special content type it does not disconnect and keep pointing to that socket live.
+    * Spring uses Scheduler behind the scenes for doing everything in reactive which is essentially a threadpool and Clock.
+      * the threadpool by default has threads equal to number of cores and they are all individual event loop.
+      * if there is any blocking call that hurts reactive api heaving hence in that case blocking code should be moved to different scheduler.
+      * use project blockinghound to verify there is no blocking code and use `Schedulers.elastic()` if there is blocking IO that cannot be avoided . 
