@@ -73,4 +73,13 @@
     * Spring uses Scheduler behind the scenes for doing everything in reactive which is essentially a threadpool and Clock.
       * the threadpool by default has threads equal to number of cores and they are all individual event loop.
       * if there is any blocking call that hurts reactive api heaving hence in that case blocking code should be moved to different scheduler.
-      * use project blockinghound to verify there is no blocking code and use `Schedulers.elastic()` if there is blocking IO that cannot be avoided . 
+      * use project blockinghound to verify there is no blocking code and use `Schedulers.elastic()` if there is blocking IO that cannot be avoided .
+      
+  * **Web Sockets** - 
+    * it is binary protocol(hence efficient) that supports bi-directional communication .
+    * they are often used in tandem with http so basically they are an extension to our http interface and our http application and not a replacement.
+    * they go really well with reactive stream specifications
+    * spring webflux makes it very easy to write WebSocket application
+    * http is good but it does not do well when it comes to bi-directional communication, so websockets are a slightly better option.
+    * can be an alternative to server-sent event stream.
+    * for someone to start using websocket they have to connect to an http endpoint that then gets upgraded to WebSocket protocol.

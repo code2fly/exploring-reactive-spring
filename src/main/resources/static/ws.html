@@ -1,0 +1,18 @@
+<html>
+<body>
+<script>
+<!--    gets called when the app is fully loaded -->
+    window.addEventListener('load', function(e) {
+        var ws = new WebSocket('ws://localhost:8080/ws/reservations')
+        // gets called when the websocket connection is open
+        ws.addEventListener('open', function(e){
+            ws.send('First websocket connection to spring app')
+        })
+        // gets called when there is any message in the websocket
+        ws.addEventListener('message', function(e){
+            console.log(e.data)
+        })
+    })
+</script>
+</body>
+</html>
