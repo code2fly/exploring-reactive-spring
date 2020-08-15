@@ -15,6 +15,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager;
 import org.springframework.data.r2dbc.connectionfactory.init.CompositeDatabasePopulator;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.reactive.TransactionalOperator;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,6 +47,13 @@ public class ExploringReactiveSpringApplication {
 		SpringApplication.run(ExploringReactiveSpringApplication.class, args);
 	}
 
+
+	@Bean
+	WebClient webClient(WebClient.Builder builder) {
+		return builder
+				.baseUrl("http://localhost:8080/api")
+				.build();
+	}
 
 	@Bean
 	RouterFunction<ServerResponse> routes(ReservationService reservationService) {
@@ -70,8 +79,9 @@ class SampleDataInitializer {
 //	private final DatabaseClient databaseClient;
 
 	@EventListener(ApplicationReadyEvent.class)
+	@Order(0)
 	public void ready() {
-
+		log.info("running database population logic");
 		this.reservationRepository
 				.deleteAll()
 				.thenMany(reservationService.saveAll("lalu", "rabri", "nitish", "tejaswi", "lalten"))
