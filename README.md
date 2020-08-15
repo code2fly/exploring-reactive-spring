@@ -51,7 +51,7 @@
     
   * **Transactions in reactive world** - 
     * since we are no more staying on the same thread during a transaction we cannot rely on the traditional approach of 
-    ThreadLocal(map of key value stored on a current thread) that spring and everything until now used.
+    ThreadLocal(map of key value stored on a current thread, with key being currentthread name and value being any value) that spring and everything until now used.
     
     * so we need some other way to propagate that state associated with  current ongoing transaction (and we cannot rely on threadlocal now with reactive)
     so reactive team created `Context`. its like a dictionary that gets propagated for the entirety of the pipeline.
