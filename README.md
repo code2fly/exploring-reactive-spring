@@ -114,6 +114,7 @@
     * it is a binary protocol that supports full duplex (bi-directional) communication , meant to be an ideal technology/protocol for service to 
     service communication.
     * integrated into spring5.2 at different layers of the stack like security, gateway etc..
+    * comparing rsocket with grpc - https://medium.com/netifi/differences-between-grpc-and-rsocket-e736c954e60
     
     * <ins>Motivations behind RSocket</ins> - 
       * in http client section we looked at different patterns to make our interactions with http services a bit more reliable , since we know services
