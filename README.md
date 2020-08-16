@@ -31,6 +31,8 @@
 		* project reactor is a toolkit that allows us to work with reactive stream types and allows us to process data coming from this reactive streams.
 		* spring reactive web brings in Spring WebFlux and not MVC, webflux is a new reactive web runtime that allows us to build reactive web services in spring ecosystem.
 		
+	* Check this for reactive https://dzone.com/articles/5-things-to-know-about-reactive-programming
+	 
 #### Basics of Reactive -  
   * The 4 main types reactive types are - 
     - Publisher - it broadcasts data to subscribers 
@@ -107,4 +109,48 @@
       of us timing out the response we can say call all of them and pick the response from the one that replied the fastest.
       * this concept can be easily achieved in reactive with `Flux.first(flux1, flux2...)`
       
-           
+      
+  * **RSocket** -
+    * it is a binary protocol that supports full duplex (bi-directional) communication , meant to be an ideal technology/protocol for service to 
+    service communication.
+    * integrated into spring5.2 at different layers of the stack like security, gateway etc..
+    
+    * <ins>Motivations behind RSocket</ins> - 
+      * in http client section we looked at different patterns to make our interactions with http services a bit more reliable , since we know services
+          are going to fail , topology changes will happen (with http we can not do much about it, we just have to try again) 
+      * we want services to be exposed such a way that they can be communicated in a natively reactive fashion i.e. we want clients to have options for control degradation
+        of their service and behavior , see topology changes, better speed.
+      * with http some of these options are not available , http1.0 is slow, we can use http2.0 which is
+      binary hence efficient that http1.1 over the wire with other benefits but basically http is request response, it is not asynchronous(we can get the effect
+      with server-sent events but its better to use a protocol that is built for this kind fo commn. like websocket).
+        * websockets though being bi-directional protocol have their own limitation that we figure out security on our own(no native on the wire security, STOMP can be used in spring to carry security headers).
+        * though http is great but it is not the best fit for high performance, low latency kind of microservice interactions particularly in a homogeneous datacenter env where 
+        we have control over the nature of the services.
+        * grpc though fast has its own limitations like every payload needs to be a protobuf, and using protobuf
+        means we need code generation and grpc services that are code generated are async by default but not reactive by default.
+          * one option is to do reactive grpc is to use a grpc plugin from salesforce (plugin for grpc compiler which transpiles
+          grpc service definitions into language of our choice).
+          * other option is RSocket, which provide reactive stream semantics.
+        * check grpc vs rsocket https://dzone.com/articles/rsocket-vs-grpc-benchmark
+      * rsocket provides 4 kinds of interaction model ***over single connection*** (http is pipelined while rsocket is multiplexed) - 
+        * request/response - stream of 1
+        * request/stream - finite stream of many in response
+        * fire-and-forget 
+        * channel - bi-directional stream
+      * it even supports session resumptions to allow long lived streams across different transport 
+      connections. (say we request first 10 records and then get disconnected say driving through a tunnel
+      then once we are out it connected and we can get next 10 records.)
+     
+    * unlike grpc , rsocket is payload agnostic, it does not care if its json or protobuf etc...
+    * apart from 4 main interaction model rsocket also supports metadata (like actuator in spring which gives health,uptime,metrics etc.. info about a service and we can 
+    connect to it as a client to see health of a service to make smart client side loadbalancing decisions). but actuators are not a standard they
+    are specific to spring boot and some other languages and frameworks have their own ways of doing this. 
+      * we don't have any specs in http that tells us to have a /actuator for a service, but with rsocket we have this, `metadata push` is 
+      where we as a service can advertise information for the client.
+        * we know client can then use flow control or backpressure to demand that service can give it only enough data that it can process at a time.
+        * this metadata push is similar functionality for server side, where service can say 'hey i am little busy now go bother someone else' etc..
+        * way to signal availability to the client.
+    
+    * we can run rocket on different transports/protocols  like tcp using `TcpServerTransport` or websocket or aeron(high speed , memory efficient wire protocol.. i.e. rsocket on top of aeron)
+      
+    * 
