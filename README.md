@@ -153,4 +153,7 @@
     
     * we can run rocket on different transports/protocols  like tcp using `TcpServerTransport` or websocket or aeron(high speed , memory efficient wire protocol.. i.e. rsocket on top of aeron)
       
-    * 
+    * with spring using rsocket becomes more easy and comes on with additional features like supplying 
+    destination variable like path variable, routes to trigger different handlers etc.
+    * an application can expose http endpoint and rsocket at the same time as shown in example in this repo.
+    

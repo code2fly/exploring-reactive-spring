@@ -1,4 +1,4 @@
-package com.github.mcoder.exploringreactivespring.vanilla.rsocket;
+package com.github.mcoder.exploringreactivespring.rsocket.vanilla;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

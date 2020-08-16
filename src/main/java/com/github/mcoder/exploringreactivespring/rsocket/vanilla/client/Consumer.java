@@ -1,11 +1,9 @@
-package com.github.mcoder.exploringreactivespring.vanilla.rsocket.client;
+package com.github.mcoder.exploringreactivespring.rsocket.vanilla.client;
 
-import com.github.mcoder.exploringreactivespring.vanilla.rsocket.JsonHelper;
-import io.rsocket.Payload;
+import com.github.mcoder.exploringreactivespring.rsocket.vanilla.JsonHelper;
 import io.rsocket.core.RSocketConnector;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
-import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.util.DefaultPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

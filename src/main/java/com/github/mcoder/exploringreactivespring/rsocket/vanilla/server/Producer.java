@@ -1,7 +1,7 @@
-package com.github.mcoder.exploringreactivespring.vanilla.rsocket.server;
+package com.github.mcoder.exploringreactivespring.rsocket.vanilla.server;
 
+import com.github.mcoder.exploringreactivespring.rsocket.vanilla.JsonHelper;
 import com.github.mcoder.exploringreactivespring.service.ReservationService;
-import com.github.mcoder.exploringreactivespring.vanilla.rsocket.JsonHelper;
 import io.rsocket.*;
 import io.rsocket.core.RSocketServer;
 import io.rsocket.transport.netty.server.TcpServerTransport;
