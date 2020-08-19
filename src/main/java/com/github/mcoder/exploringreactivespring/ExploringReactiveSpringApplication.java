@@ -28,6 +28,15 @@ import org.springframework.data.r2dbc.core.DatabaseClientExtensionsKt;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -100,6 +109,38 @@ class SampleDataInitializer {
 
 }
 
+@Configuration
+class SecurityConfig {
 
+	@Bean
+	ReactiveUserDetailsService authentication( ) {
+//		todo dont use defaultpasswordencoder in prod since default will change based on latest password strategy like BCrypt today so better be specific on what u need
+		UserDetails user1 = User.withDefaultPasswordEncoder()
+				.username("lalu")
+				.password("lalten")
+				.roles("NETA")
+				.build();
+		UserDetails user2 = User.withDefaultPasswordEncoder()
+				.username("lalu")
+				.password("lalten")
+				.roles("NETA")
+				.build();
+		return  new MapReactiveUserDetailsService(user1, user2);
+	}
+
+
+
+	@Bean
+	SecurityWebFilterChain authorization(ServerHttpSecurity httpSecurity) {
+		return httpSecurity
+				.csrf(csrfSpec -> csrfSpec.disable())
+				.httpBasic(Customizer.withDefaults())
+				.authorizeExchange(ae -> ae.pathMatchers("/greeting*").authenticated()
+				.anyExchange().permitAll())
+				.build();
+	}
+
+
+}
 
 

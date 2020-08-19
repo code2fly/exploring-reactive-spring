@@ -158,3 +158,32 @@
     destination variable like path variable, routes to trigger different handlers etc.
     * an application can expose http endpoint and rsocket at the same time as shown in example in this repo.
     
+    
+  * **Security** - in reactive context
+    * the basic motive here is since in reactive application the number of threads available are very finite and precious 
+    we cannot keep them blocked for any crypto related work, and crypto being cpu intensive does not have any reactive meaning to it.
+    * so all we are looking for is to make that exchange or interaction off the reactive thread pool.
+    * in context of reactive apps this is what spring 5.x does, with ReactiveUserDetailsService and ReactiveAuthenticationManager these 
+    things ultimately end up moving the brief time we are doing  cryptography part on to  a separate thread.
+    * check Bcrypt - password encoding mechanism but computationally inefficient. (used widely today)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
