@@ -166,6 +166,7 @@
     * in context of reactive apps this is what spring 5.x does, with ReactiveUserDetailsService and ReactiveAuthenticationManager these 
     things ultimately end up moving the brief time we are doing  cryptography part on to  a separate thread.
     * check Bcrypt - password encoding mechanism but computationally inefficient. (used widely today)
+    * in case of rsocket for authorization instead of creating a web security filter chain we will create a "payload socket acceptor interceptor"
     
     
     

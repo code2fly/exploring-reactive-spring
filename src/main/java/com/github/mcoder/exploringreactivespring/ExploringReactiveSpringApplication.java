@@ -30,12 +30,15 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
+import org.springframework.security.config.annotation.rsocket.EnableRSocketSecurity;
+import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.rsocket.core.PayloadSocketAcceptorInterceptor;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -110,7 +113,20 @@ class SampleDataInitializer {
 }
 
 @Configuration
+@EnableRSocketSecurity
 class SecurityConfig {
+
+	//
+	@Bean
+	PayloadSocketAcceptorInterceptor rsocketAuthorization(RSocketSecurity rSocketSecurity) {
+		return rSocketSecurity
+				.authorizePayload(authorizePayloadsSpec -> authorizePayloadsSpec.route("reservation*").authenticated()
+						.anyExchange().permitAll()
+				)
+				.simpleAuthentication(Customizer.withDefaults())
+				.build();
+
+	}
 
 	@Bean
 	ReactiveUserDetailsService authentication( ) {
